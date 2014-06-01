@@ -17,3 +17,6 @@ SOURCES += *.cpp
 HEADERS  += *.h
 
 FORMS    += *.ui
+
+OTHER_FILES += \
+    README.md

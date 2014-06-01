@@ -60,18 +60,19 @@
  // -----------------------------------------------------------------------------------------------------
  bool ScribbleArea::openImage(const QString &fileName)
  {
+     // First load the image
      QImage loadedImage;
      if (!loadedImage.load(fileName))
          return false;
 
-//     QSize newSize = loadedImage.size().expandedTo(size());
-     //resizeImage(&loadedImage, newSize);
+     // Then, initialize the images with the loaded image
+     image_original = image = loadedImage;
 
-     image_tympanum = image_original = image = loadedImage;
-
+     // Initialize the segmented images
      image_tympanum.fill(qRgb(255, 255, 255));
      image_segmented = image_tympanum;
      modified = false;
+     // Update the widget and resize it
      update();
      this->resize(loadedImage.size());
 
@@ -82,11 +83,14 @@
  // -----------------------------------------------------------------------------------------------------
  bool ScribbleArea::saveImage(const QString &fileName, const char *fileFormat)
  {
+     // Save the new image
      QImage visibleImage = image;
      resizeImage(&visibleImage, image.size());
 
+     // Add the percentage as text in the image
      drawText(&visibleImage);
 
+     // Save it
      if (visibleImage.save(fileName, fileFormat)) {
          modified = false;
          return true;
@@ -113,6 +117,7 @@
  // -----------------------------------------------------------------------------------------------------
  void ScribbleArea::clearImage()
  {
+     // Remove all the images
      image.fill(qRgb(255, 255, 255));
      image_original = image_tympanum = image;
      modified = true;
@@ -122,6 +127,7 @@
 
  // -----------------------------------------------------------------------------------------------------
  void ScribbleArea::resetAirdrum() {
+     // If when the user has a mistake, he can to reset the airdrum selection process and start again.
     image = image_original;
     image_segmented.fill(qRgb(255, 255, 255));
     update();
@@ -130,6 +136,8 @@
 
  // -----------------------------------------------------------------------------------------------------
  void ScribbleArea::acceptAirdrum() {
+     // If the user accept the airdrum selection, store temporaly the data and prepare for the
+     // punction selection process
      image_aux = image;
      image_tympanum = image_segmented;
      image_segmented.fill(qRgb(255, 255, 255));
@@ -139,6 +147,7 @@
 
  // -----------------------------------------------------------------------------------------------------
  void ScribbleArea::resetPunction() {
+     // If when the user has a mistake, he can to reset the perforation selection process and start again.
      image = image_aux;
      image_segmented.fill(qRgb(255, 255, 255));
      update();
@@ -147,6 +156,7 @@
 
  // -----------------------------------------------------------------------------------------------------
  void ScribbleArea::acceptPunction() {
+     // If the user accept the punction selection, compute the percentage.
      int t=0, p=0;
      QSize size = image_tympanum.size();
      QRgb white = qRgb(255,255,255);
@@ -157,11 +167,14 @@
          }
      }
 
+     // Store it.
      percentage = static_cast<float>(p)*100/static_cast<float>(t);
 
+     // And show a message with the value
      QMessageBox message(QMessageBox::NoIcon,tr("Resultado"),QString("El tamaño de la"
             "perforación es de un %1 %.\n¿Desea guardar la imagen?").arg(percentage),QMessageBox::Ok|QMessageBox::Cancel,this);
 
+     // Also, he can to store the processed image.
      if( message.exec() ==  QMessageBox::Ok) emit saveImage();
  }
 
@@ -233,7 +246,6 @@
 
      painter.drawPath(path);
      if(fillImage) painter.fillPath(path,QBrush(myPenColor));
-     //painter.drawLine(lastPoint, endPoint);
      modified = true;
 
      update();
@@ -244,7 +256,6 @@
 
          painter.drawPath(path.simplified());
          if(fillImage) painter.fillPath(path,QBrush(myPenColor));
-         //painter.drawLine(lastPoint, endPoint);
          modified = true;
 
          update();

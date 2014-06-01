@@ -38,6 +38,14 @@
 **
 ****************************************************************************/
 
+
+/****************************************************************************
+**
+** This is a modified version of the Qt ScribbleArea for the program purpose.
+**
+****************************************************************************/
+
+
 #ifndef SCRIBBLEAREA_H
 #define SCRIBBLEAREA_H
 
@@ -53,28 +61,59 @@ class ScribbleArea : public QWidget
 public:
     ScribbleArea(QWidget *parent = 0);
 
+    /**
+     * @brief openImage
+     * @param fileName of the image with a perfored airdrum
+     * @return true if the file is opened correctly, false otherwise
+     */
     bool openImage(const QString &fileName);
+
+    /**
+     * @brief saveImage
+     * @param fileName of the processed image to save
+     * @param fileFormat of the image
+     * @return true if the file is saved correctly, false otherwise
+     */
     bool saveImage(const QString &fileName, const char *fileFormat);
+
+    /**
+     * @brief setPenColor
+     * @param newColor, new color of the pen
+     */
     void setPenColor(const QColor &newColor);
+
+    /**
+     * @brief setPenWidth
+     * @param newWidth, the width of the pen
+     */
     void setPenWidth(int newWidth);
 
+    /**
+     * @brief isModified
+     * @return true if the image is modified, false if not
+     */
     bool isModified() const { return modified; }
+
+    /**
+     * @brief penColor
+     * @return the actual color of the pen
+     */
     QColor penColor() const { return myPenColor; }
+
+    /**
+     * @brief penWidth
+     * @return the actual width of the pen
+     */
     int penWidth() const { return myPenWidth; }
 
 signals:
     void saveImage();
 
 public slots:
-
     void clearImage();
-
     void resetAirdrum();
-
     void resetPunction();
-
     void acceptAirdrum();
-
     void acceptPunction();
 
 protected:
