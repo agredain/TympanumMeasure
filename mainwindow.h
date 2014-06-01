@@ -16,9 +16,16 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-private slots:
+public slots:
     void openFile();
 
+    void acceptAirdrum();
+
+    void acceptPunction();
+
+    void saveFile();
+
+    void cleanImage();
 
 private:
     Ui::MainWindow *ui;

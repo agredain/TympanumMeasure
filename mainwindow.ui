@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
@@ -6,74 +6,125 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>489</width>
-    <height>354</height>
+    <width>948</width>
+    <height>653</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
+  <widget class="QWidget" name="container">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <layout class="QVBoxLayout" name="controlLayout">
-      <item>
-       <widget class="QPushButton" name="openFileButton">
-        <property name="text">
-         <string>Abrir Imagen</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="nextButton">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>Siguiente</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="bottomVerticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QLabel" name="resultLabel">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="topVerticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </item>
-    <item>
-     <widget class="ScribbleArea" name="widget" native="true"/>
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOn</enum>
+      </property>
+      <property name="horizontalScrollBarPolicy">
+       <enum>Qt::ScrollBarAlwaysOn</enum>
+      </property>
+      <widget class="ScribbleArea" name="widget">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>0</width>
+         <height>0</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
     </item>
    </layout>
   </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="openImage"/>
+   <addaction name="saveImage"/>
+   <addaction name="cleanImage"/>
+   <addaction name="separator"/>
+   <addaction name="acceptTympanum"/>
+   <addaction name="cleanTympanum"/>
+   <addaction name="separator"/>
+   <addaction name="acceptPunction"/>
+   <addaction name="cleanPunction"/>
+  </widget>
+  <action name="openImage">
+   <property name="text">
+    <string>AbrirImagen</string>
+   </property>
+   <property name="toolTip">
+    <string>Abrir Imagen</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+A</string>
+   </property>
+  </action>
+  <action name="cleanImage">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Limpiar Imagen</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="acceptTympanum">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Aceptar Tímpano</string>
+   </property>
+  </action>
+  <action name="cleanTympanum">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Limpiar Tímpano</string>
+   </property>
+  </action>
+  <action name="saveImage">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Guardar Imagen</string>
+   </property>
+  </action>
+  <action name="acceptPunction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Aceptar Perforación</string>
+   </property>
+  </action>
+  <action name="cleanPunction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Limpiar Perforación</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
@@ -82,30 +133,104 @@
    <extends>QWidget</extends>
    <header>scribblearea.h</header>
    <container>1</container>
+   <slots>
+    <slot>saveImage()</slot>
+    <slot>clearImage()</slot>
+    <slot>resetAirdrum()</slot>
+    <slot>resetPunction()</slot>
+    <slot>acceptAirdrum()</slot>
+    <slot>acceptPunction()</slot>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources/>
  <connections>
   <connection>
-   <sender>openFileButton</sender>
-   <signal>clicked()</signal>
+   <sender>saveImage</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>saveFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>473</x>
+     <y>326</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>openImage</sender>
+   <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>openFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>47</x>
-     <y>21</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>244</x>
-     <y>176</y>
+     <x>473</x>
+     <y>326</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>acceptTympanum</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>acceptAirdrum()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>473</x>
+     <y>326</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>acceptPunction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>acceptPunction()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>473</x>
+     <y>326</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cleanImage</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>cleanImage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>473</x>
+     <y>326</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <slots>
   <slot>openFile()</slot>
-  <slot>nextStep()</slot>
-  <slot>finalStep()</slot>
+  <slot>acceptAirdrum()</slot>
+  <slot>acceptPunction()</slot>
+  <slot>saveFile()</slot>
+  <slot>cleanImage()</slot>
  </slots>
 </ui>

@@ -62,9 +62,20 @@ public:
     QColor penColor() const { return myPenColor; }
     int penWidth() const { return myPenWidth; }
 
+signals:
+    void saveImage();
+
 public slots:
+
     void clearImage();
-    void print();
+
+    void resetAirdrum();
+
+    void resetPunction();
+
+    void acceptAirdrum();
+
+    void acceptPunction();
 
 protected:
     void mousePressEvent(QMouseEvent *event);
@@ -74,7 +85,8 @@ protected:
     void resizeEvent(QResizeEvent *event);
 
 private:
-    void drawLineTo(const QPoint &endPoint);
+    void drawText(QImage *image);
+    void drawLineTo(QImage *image, const QPoint &endPoint, bool fillImage = false);
     void resizeImage(QImage *image, const QSize &newSize);
 
     bool modified;
@@ -82,9 +94,16 @@ private:
     int myPenWidth;
     QColor myPenColor;
     QImage image;
-    QImage image_timpa;
-    QImage image_perforation;
+    QImage image_aux;
+    QImage image_segmented;
+    QImage image_original;
+    QImage image_tympanum;
     QPoint lastPoint;
+    QPoint firstPoint;
+
+    float percentage;
+
+    QPainterPath path;
 };
 
 #endif
