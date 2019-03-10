@@ -57,26 +57,23 @@
  }
 
 
- // -----------------------------------------------------------------------------------------------------
- bool ScribbleArea::openImage(const QString &fileName)
- {
-     // First load the image
-     QImage loadedImage;
-     if (!loadedImage.load(fileName))
-         return false;
+void ScribbleArea::openImage(const QString &fileName) {
+    // First load the image
+    QImage loadedImage;
+    if (!loadedImage.load(fileName))
+        return;
 
-     // Then, initialize the images with the loaded image
-     image_original = image = loadedImage;
+    // Then, initialize the images with the loaded image
+    image_original = image = loadedImage;
 
-     // Initialize the segmented images
-     image_tympanum.fill(qRgb(255, 255, 255));
-     image_segmented = image_tympanum;
-     modified = false;
-     // Update the widget and resize it
-     update();
-     this->resize(loadedImage.size());
-
-     return true;
+    // Initialize the segmented images
+    image_tympanum.fill(qRgb(255, 255, 255));
+    image_segmented = image_tympanum;
+    modified = false;
+    // Update the widget and resize it
+    update();
+    qDebug() << loadedImage.size();
+    this->resize(loadedImage.size());
  }
 
 
@@ -200,8 +197,6 @@
      }
  }
 
-
- // -----------------------------------------------------------------------------------------------------
  void ScribbleArea::mouseReleaseEvent(QMouseEvent *event)
  {
      if (event->button() == Qt::LeftButton && scribbling) {
@@ -211,8 +206,6 @@
      }
  }
 
-
- // -----------------------------------------------------------------------------------------------------
  void ScribbleArea::paintEvent(QPaintEvent *event)
  {
      QPainter painter(this);
@@ -220,18 +213,29 @@
      painter.drawImage(dirtyRect, image, dirtyRect);
  }
 
+ void ScribbleArea::wheelEvent(QWheelEvent *event) {
+     event->accept();
+     QPoint numDegrees = event->angleDelta() / 30;
+     QSize size = image.size() * (100 + numDegrees.y()) / 100 ;
 
- // -----------------------------------------------------------------------------------------------------
- void ScribbleArea::resizeEvent(QResizeEvent *event)
- {
-     if (width() > image.width() || height() > image.height()) {
-         int newWidth = qMax(width() + 128, image.width());
-         int newHeight = qMax(height() + 128, image.height());
-         resizeImage(&image, QSize(newWidth, newHeight));
-         update();
-     }
-     QWidget::resizeEvent(event);
+     qDebug() << image.size() << size;
+
+     resizeImage(&image, size);
+     update();
  }
+
+// void ScribbleArea::resizeEvent(QResizeEvent *event)
+// {
+//     qDebug() << width() << ":" << height() << " " << image.width() << ":" << image.height();
+//     if (width() > image.width() || height() > image.height()) {
+//         qDebug() << width() << ":" << height() << " " << image.width() << ":" << image.height();
+//         int newWidth = qMax(width() + 128, image.width());
+//         int newHeight = qMax(height() + 128, image.height());
+//         resizeImage(&image, QSize(newWidth, newHeight));
+//         update();
+//     }
+//     QWidget::resizeEvent(event);
+// }
 
 
  // -----------------------------------------------------------------------------------------------------
@@ -270,11 +274,13 @@
      if (image->size() == newSize)
          return;
 
-     QImage newImage(newSize, QImage::Format_RGB32);
-     newImage.fill(qRgb(255, 255, 255));
-     QPainter painter(&newImage);
-     painter.drawImage(QPoint(0, 0), *image);
-     *image = newImage;
+     QPainter painter(this);
+     if(image != nullptr) {
+        QImage map = image->scaled(newSize, Qt::KeepAspectRatio);
+        resize(newSize);
+        painter.drawImage(0, 0, map );
+        *image = map;
+     }
  }
 
 
@@ -285,7 +291,7 @@
                          Qt::RoundJoin));
      painter.setBrush(QBrush(myPenColor));
 
-     QPoint point = QPoint(20,20+image->height()*0.05);
+     QPoint point = QPoint(20, 20 + image->height() * 0.05);
 
      QFont font = painter.font();
      font.setPixelSize(image->height()*0.03);

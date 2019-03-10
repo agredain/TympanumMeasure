@@ -66,7 +66,7 @@ public:
      * @param fileName of the image with a perfored airdrum
      * @return true if the file is opened correctly, false otherwise
      */
-    bool openImage(const QString &fileName);
+    void openImage(const QString &fileName);
 
     /**
      * @brief saveImage
@@ -122,6 +122,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
     void paintEvent(QPaintEvent *event);
     void resizeEvent(QResizeEvent *event);
+    void wheelEvent(QWheelEvent *event);
 
 private:
     void drawText(QImage *image);
