@@ -58,17 +58,15 @@
 
 
 void ScribbleArea::openImage(const QString &fileName) {
-    // First load the image
-    QImage loadedImage;
-    if (!loadedImage.load(fileName))
+    if (!image_original.load(fileName))
         return;
 
     // Then, initialize the images with the loaded image
-    image_tympanum = image_original = image = loadedImage;
+    image_segmented = image_tympanum = image = image_original;
 
     // Initialize the segmented images
     image_tympanum.fill(qRgb(255, 255, 255));
-    image_segmented = image_tympanum;
+    image_segmented.fill(qRgb(255, 255, 255));
     modified = false;
     // Update the widget and resize it
     QSize parentSize = parentWidget()->size();
@@ -89,12 +87,12 @@ void ScribbleArea::openImage(const QString &fileName) {
      drawText(&visibleImage);
 
      // Save it
-     if (visibleImage.save(fileName, fileFormat)) {
-         modified = false;
-         return true;
-     } else {
+     if (!visibleImage.save(fileName, fileFormat)) {
          return false;
      }
+
+     modified = false;
+     return true;
  }
 
 
@@ -102,10 +100,9 @@ void ScribbleArea::openImage(const QString &fileName) {
  void ScribbleArea::clearImage()
  {
      // Remove all the images
-     image.fill(qRgb(255, 255, 255));
-     image_original = image_tympanum = image;
+     image_segmented = image_tympanum = image = image_original = QImage();
      modified = true;
-     update();
+     resize(0,0);
  }
 
 
@@ -114,7 +111,12 @@ void ScribbleArea::openImage(const QString &fileName) {
      // If when the user has a mistake, he can to reset the airdrum selection process and start again.
     image = image_original;
     image_segmented.fill(qRgb(255, 255, 255));
-    update();
+    image_tympanum.fill(qRgb(255, 255, 255));
+
+    QSize parentSize = parentWidget()->size();
+    QSize imagesize = image.size();
+    imagesize.scale(parentSize.width(), parentSize.height(), Qt::KeepAspectRatio);
+    resize(imagesize);
  }
 
 
@@ -146,8 +148,8 @@ void ScribbleArea::openImage(const QString &fileName) {
      QRgb white = qRgb(255,255,255);
      for(int i=0; i< size.width(); i++) {
          for(int j=0; j< size.height(); j++) {
-            if(image_tympanum.pixel(i,j) != white) t++;
-            if(image_segmented.pixel(i,j) != white) p++;
+             t += image_tympanum.pixel(i,j) != white;
+             p += image_segmented.pixel(i,j) != white;
          }
      }
 
@@ -203,11 +205,12 @@ void ScribbleArea::openImage(const QString &fileName) {
  }
 
  void ScribbleArea::wheelEvent(QWheelEvent *event) {
-     QPoint numDegrees = event->angleDelta() / 30;
-     QSize size = image.size() * (100 + numDegrees.y()) / 100 ;
+//     QPoint numDegrees = event->angleDelta() / 30;
+//     QSize size = image.size() * (100 + numDegrees.y()) / 100 ;
 
-     resize(size);
-     event->accept();
+//     resize(size);
+//     event->accept();
+     QWidget::wheelEvent(event);
  }
 
  void ScribbleArea::resizeEvent(QResizeEvent *event) {
