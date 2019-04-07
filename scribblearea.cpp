@@ -64,16 +64,17 @@ void ScribbleArea::openImage(const QString &fileName) {
         return;
 
     // Then, initialize the images with the loaded image
-    image_original = image = loadedImage;
+    image_tympanum = image_original = image = loadedImage;
 
     // Initialize the segmented images
     image_tympanum.fill(qRgb(255, 255, 255));
     image_segmented = image_tympanum;
     modified = false;
     // Update the widget and resize it
-    update();
-    qDebug() << loadedImage.size();
-    this->resize(loadedImage.size());
+    QSize parentSize = parentWidget()->size();
+    QSize imagesize = image.size();
+    imagesize.scale(parentSize.width(), parentSize.height(), Qt::KeepAspectRatio);
+    resize(imagesize);
  }
 
 
@@ -82,7 +83,7 @@ void ScribbleArea::openImage(const QString &fileName) {
  {
      // Save the new image
      QImage visibleImage = image;
-     resizeImage(&visibleImage, image.size());
+     resizeImage(visibleImage, image.size());
 
      // Add the percentage as text in the image
      drawText(&visibleImage);
@@ -94,20 +95,6 @@ void ScribbleArea::openImage(const QString &fileName) {
      } else {
          return false;
      }
- }
-
-
- // -----------------------------------------------------------------------------------------------------
- void ScribbleArea::setPenColor(const QColor &newColor)
- {
-     myPenColor = newColor;
- }
-
-
- // -----------------------------------------------------------------------------------------------------
- void ScribbleArea::setPenWidth(int newWidth)
- {
-     myPenWidth = newWidth;
  }
 
 
@@ -165,7 +152,9 @@ void ScribbleArea::openImage(const QString &fileName) {
      }
 
      // Store it.
-     percentage = static_cast<float>(p)*100/static_cast<float>(t);
+     percentage = static_cast<double>(p)*100.0 / static_cast<double>(t);
+
+     qDebug() << "punction: " << p << "airdrum: " << t;
 
      // And show a message with the value
      QMessageBox message(QMessageBox::NoIcon,tr("Resultado"),QString("El tamaño de la"
@@ -210,32 +199,24 @@ void ScribbleArea::openImage(const QString &fileName) {
  {
      QPainter painter(this);
      QRect dirtyRect = event->rect();
-     painter.drawImage(dirtyRect, image, dirtyRect);
+     painter.drawImage(dirtyRect, image, image.rect());
  }
 
  void ScribbleArea::wheelEvent(QWheelEvent *event) {
-     event->accept();
      QPoint numDegrees = event->angleDelta() / 30;
      QSize size = image.size() * (100 + numDegrees.y()) / 100 ;
 
-     qDebug() << image.size() << size;
-
-     resizeImage(&image, size);
-     update();
+     resize(size);
+     event->accept();
  }
 
-// void ScribbleArea::resizeEvent(QResizeEvent *event)
-// {
-//     qDebug() << width() << ":" << height() << " " << image.width() << ":" << image.height();
-//     if (width() > image.width() || height() > image.height()) {
-//         qDebug() << width() << ":" << height() << " " << image.width() << ":" << image.height();
-//         int newWidth = qMax(width() + 128, image.width());
-//         int newHeight = qMax(height() + 128, image.height());
-//         resizeImage(&image, QSize(newWidth, newHeight));
-//         update();
-//     }
-//     QWidget::resizeEvent(event);
-// }
+ void ScribbleArea::resizeEvent(QResizeEvent *event) {
+     resizeImage(image, event->size());
+     resizeImage(image_segmented, event->size());
+     resizeImage(image_tympanum, event->size());
+     update();
+     QWidget::resizeEvent(event);
+ }
 
 
  // -----------------------------------------------------------------------------------------------------
@@ -264,22 +245,14 @@ void ScribbleArea::openImage(const QString &fileName) {
 
          update();
      }
-
  }
 
 
  // -----------------------------------------------------------------------------------------------------
- void ScribbleArea::resizeImage(QImage *image, const QSize &newSize)
+ void ScribbleArea::resizeImage(QImage &image, const QSize &newSize)
  {
-     if (image->size() == newSize)
-         return;
-
-     QPainter painter(this);
-     if(image != nullptr) {
-        QImage map = image->scaled(newSize, Qt::KeepAspectRatio);
-        resize(newSize);
-        painter.drawImage(0, 0, map );
-        *image = map;
+     if (image.size() != newSize) {
+        image = image.scaled(newSize, Qt::KeepAspectRatio);
      }
  }
 

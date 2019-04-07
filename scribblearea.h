@@ -80,13 +80,13 @@ public:
      * @brief setPenColor
      * @param newColor, new color of the pen
      */
-    void setPenColor(const QColor &newColor);
+    void setPenColor(const QColor &newColor) { myPenColor = newColor; }
 
     /**
      * @brief setPenWidth
      * @param newWidth, the width of the pen
      */
-    void setPenWidth(int newWidth);
+    void setPenWidth(int newWidth) { myPenWidth = newWidth; }
 
     /**
      * @brief isModified
@@ -127,21 +127,21 @@ protected:
 private:
     void drawText(QImage *image);
     void drawLineTo(QImage *image, const QPoint &endPoint, bool fillImage = false);
-    void resizeImage(QImage *image, const QSize &newSize);
+    void resizeImage(QImage &image, const QSize &newSize);
 
     bool modified;
     bool scribbling;
     int myPenWidth;
     QColor myPenColor;
+    QImage image_original;
     QImage image;
     QImage image_aux;
     QImage image_segmented;
-    QImage image_original;
     QImage image_tympanum;
     QPoint lastPoint;
     QPoint firstPoint;
 
-    float percentage;
+    double percentage;
 
     QPainterPath path;
 };
